@@ -12,62 +12,60 @@ class Program {
 
     // Run along index row
     for(int i=0; i<lines[indexRow].Length; i++) {
-      //Console.WriteLine("i: {0}",i);
       if (lines[indexRow][i] == ' ') {
         
       } else {
+        // Find all rows which aren't blank. Push them onto stack
         Stack<char> stack = new Stack<char>();
         for (int j=indexRow-1; j>=0; j--) {
-          //Console.WriteLine(" j: {0}",j);
           if(lines[j][i] == ' ') {
             
           } else {
             stack.Push(lines[j][i]);
           }
         }
+        // Add stack to list of stacks
         stacks.Add(stack);
       }
     }
-    //foreach(Stack<char> stack in stacks) {
-      //foreach (var item in stack)
-       //Console.Write(item + ",");
-      //Console.WriteLine();
-    
-    //}
-    //Console.WriteLine(stacks[0].Pop());
 
+    // Identify commands to execute
     for (int i=indexRow+2; i<lines.Length; i++) {
-      Console.WriteLine("i: {0}", i);
       string commandLine = lines[i];
       string[] commands = commandLine.Split(new[] { "move ", " from ", " to " }, StringSplitOptions.None);
       
-      Console.WriteLine("-");
-      foreach(string s in commands){
-        Console.WriteLine(s);
-      }
-      Console.WriteLine("-");
-      
+
       
       int reps = Convert.ToInt32(commands[1]);
       int fromStack = Convert.ToInt32(commands[2]) - 1;
       int toStack = Convert.ToInt32(commands[3]) - 1;
-      //int reps = Char.GetNumericValue(commandLine[5]);
-      //int fromStack = Char.GetNumericValue(commandLine[12]);
-      //int toStack = Char.GetNumericValue(commandLine[17]);
-      Console.WriteLine("Move {0} from {1} to {2}", reps, fromStack, toStack);      
+
+      // Create stack of items to move.
+      // Stack ensures order stays the same
+      Stack<char> toMove = new Stack<char>();
+
+      // Remove n from cargo stack into stack
       for (int numCmd = 0; numCmd<reps; numCmd++) {
         char popped = stacks[fromStack].Pop();
-        stacks[toStack].Push(popped);
+        toMove.Push(popped);
       }
+
+      // Empty the stack onto the new cargo stack
+      while(toMove.Count > 0) {
+        char pop = toMove.Pop();
+        stacks[toStack].Push(pop);
+      }
+      
     }
 
-    StringBuilder sb = new StringBuilder();
     
     // All shifts complete
+    // Get top item from each stack
+    StringBuilder sb = new StringBuilder();
     foreach(Stack<char> stack in stacks) {
-      sb.Append(stack.Pop());
+      sb.Append(stack.Peek());
     }
     string output = sb.ToString();
     Console.WriteLine(output);
   }
-}
+} // LVMRWSSPZ
